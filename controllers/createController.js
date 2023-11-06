@@ -4,7 +4,7 @@ const dbCreate = async (req, res) => {
   try {
     const newDbModel = new dbModel()
 
-    newDbModel.name = req.body.name
+    newDbModel.name = req.body.name.toLowerCase()
     newDbModel.code = req.body.code
     newDbModel.quantity = req.body.quantity
 
@@ -18,7 +18,7 @@ const dbCreate = async (req, res) => {
 
 const dbGet = async (req, res) => {
   try {
-    const name = req.query.name
+    const name = req.query.name.toLowerCase()
     let result = await dbModel.findOne({ name: name })
     console.log(result)
     return res.send({ data: result })
@@ -60,4 +60,21 @@ const dbApiSend = async (req, res) => {
   }
 }
 
-module.exports = { dbCreate, dbGet, dbApiSend }
+
+const dbApiMessages =  async (req, res) => {
+  const userMessage = req.body.message.toLowerCase();
+
+  if (userMessage === '1 product name') {
+    const product = await dbModel.findOne({ name: 'Product Name' }); 
+    if (product) {
+      const response = `${product.name} quantity is ${product.quantity}`;
+      res.json({ message: response });
+    } else {
+      res.json({ message: 'Product not found' });
+    }
+  } else {
+    res.json({ message: 'Invalid input' });
+  }
+}
+
+module.exports = { dbCreate, dbGet, dbApiSend,dbApiMessages }
